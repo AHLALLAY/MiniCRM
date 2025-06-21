@@ -1,61 +1,278 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Configuration d'une API Laravel avec JWT Auth et PostgreSQL
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Ce guide vous accompagne dans la configuration d'une API Laravel utilisant JWT pour l'authentification et PostgreSQL comme base de données.
 
-## About Laravel
+## Prérequis
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Avant de commencer, assurez-vous d'avoir installé :
+- PHP 8.1 ou supérieur
+- Composer
+- PostgreSQL
+- Git
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Installation et Configuration
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 1. Installation des dépendances PHP
 
-## Learning Laravel
+```bash
+composer install
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Cette commande installe toutes les dépendances définies dans le fichier `composer.json`.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 2. Installation et configuration de JWT Auth
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+#### Installation du package JWT Auth
+```bash
+composer require tymon/jwt-auth
+```
 
-## Laravel Sponsors
+#### Publication de la configuration JWT
+```bash
+php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 3. Configuration de l'environnement
 
-### Premium Partners
+```bash
+cp .env.example .env
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Créez votre fichier de configuration local à partir du template fourni.
 
-## Contributing
+### 4. Génération des clés de sécurité
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+#### Clé d'application Laravel
+```bash
+php artisan key:generate
+```
 
-## Code of Conduct
+#### Clé JWT pour l'authentification
+```bash
+php artisan jwt:secret
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 5. Configuration de la base de données PostgreSQL
 
-## Security Vulnerabilities
+Éditez le fichier `.env` et configurez les paramètres de connexion PostgreSQL :
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```env
+# Configuration de la base de données
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=nom_de_votre_db
+DB_USERNAME=votre_username
+DB_PASSWORD=votre_password
 
-## License
+# Configuration JWT (optionnel - personnalisation)
+JWT_SECRET=votre_secret_jwt
+JWT_TTL=60
+JWT_REFRESH_TTL=20160
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Configuration de l'application
+APP_NAME="Mon API Laravel"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+```
+
+### 6. Création de la base de données
+
+#### Option 1 : Via la ligne de commande PostgreSQL
+```bash
+createdb nom_de_votre_db
+```
+
+#### Option 2 : Via psql
+```bash
+psql -U postgres
+CREATE DATABASE nom_de_votre_db;
+\q
+```
+
+### 7. Exécution des migrations
+
+```bash
+php artisan migrate
+```
+
+Cette commande crée toutes les tables nécessaires dans votre base de données.
+
+### 8. Insertion des données de test (optionnel)
+
+```bash
+php artisan db:seed
+```
+
+Exécute les seeders pour peupler la base de données avec des données de test.
+
+### 9. Optimisation des performances (optionnel)
+
+```bash
+# Cache de configuration
+php artisan config:cache
+
+# Cache des routes
+php artisan route:cache
+
+# Cache des vues
+php artisan view:cache
+```
+
+### 10. Lancement du serveur de développement
+
+```bash
+php artisan serve
+```
+
+Votre API sera accessible sur : **http://localhost:8000**
+
+## Vérification de l'installation
+
+### Test de l'API
+Vous pouvez tester votre API avec curl ou Postman :
+
+```bash
+# Test de base
+curl http://localhost:8000/api/health
+
+# Test d'authentification (si route disponible)
+curl -X POST http://localhost:8000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"password"}'
+```
+
+### Vérification de la base de données
+```bash
+php artisan tinker
+>>> DB::connection()->getPdo();
+```
+
+## Commandes utiles pour le développement
+
+### Génération de modèles et migrations
+```bash
+# Créer un modèle avec migration
+php artisan make:model NomModel -m
+
+# Créer un contrôleur
+php artisan make:controller NomController
+
+# Créer un middleware
+php artisan make:middleware NomMiddleware
+```
+
+### Gestion de la base de données
+```bash
+# Rollback des migrations
+php artisan migrate:rollback
+
+# Reset complet de la base
+php artisan migrate:fresh --seed
+
+# Vérifier le statut des migrations
+php artisan migrate:status
+```
+
+### Nettoyage du cache
+```bash
+# Nettoyer tous les caches
+php artisan optimize:clear
+
+# Ou individuellement
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+```
+
+## Dépannage
+
+### Erreurs courantes
+
+**Erreur de connexion PostgreSQL :**
+- Vérifiez que PostgreSQL est démarré : `sudo service postgresql start`
+- Vérifiez les identifiants dans le fichier `.env`
+
+**Erreur JWT Secret :**
+- Assurez-vous d'avoir installé le package : `composer require tymon/jwt-auth`
+- Publiez la configuration : `php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"`
+- Exécutez `php artisan jwt:secret`
+- Vérifiez la présence de `JWT_SECRET` dans `.env`
+
+**Erreur de permissions :**
+```bash
+# Donner les bonnes permissions aux dossiers
+chmod -R 775 storage bootstrap/cache
+```
+
+**Problème de migration :**
+```bash
+# Reset et re-migration
+php artisan migrate:fresh
+```
+
+## Structure du projet
+
+```
+├── app/
+│   ├── Http/Controllers/     # Contrôleurs de l'API
+│   ├── Models/              # Modèles Eloquent
+│   └── Middleware/          # Middlewares personnalisés
+├── database/
+│   ├── migrations/          # Fichiers de migration
+│   └── seeders/            # Fichiers de seed
+├── routes/
+│   └── api.php             # Routes de l'API
+└── .env                    # Configuration environnement
+```
+
+## Ressources utiles
+
+- [Documentation Laravel](https://laravel.com/docs)
+- [Documentation JWT Auth](https://jwt-auth.readthedocs.io/)
+- [Documentation PostgreSQL](https://www.postgresql.org/docs/)
+
+## Contribution au projet
+
+### Important pour les contributeurs
+
+⚠️ **OBLIGATOIRE :** Avant de commencer à travailler sur le projet, vous **devez** créer une branche spécifique pour vos modifications.
+
+```bash
+# Ne jamais travailler directement sur main/master
+git checkout -b feature/nom-de-votre-fonctionnalite
+
+# Ou pour un bugfix
+git checkout -b fix/description-du-bug
+
+# Ou pour de la documentation
+git checkout -b docs/mise-a-jour-readme
+```
+
+### Workflow de contribution
+
+1. **Créer une branche** pour votre travail
+2. **Effectuer vos modifications** et commits
+3. **Pousser votre branche** : `git push origin nom-de-votre-branche`
+4. **Créer une Pull Request** vers la branche principale
+5. **Attendre la review** avant le merge
+
+### Convention de nommage des branches
+
+- `feature/` - Pour les nouvelles fonctionnalités
+- `fix/` - Pour les corrections de bugs
+- `docs/` - Pour les modifications de documentation
+- `refactor/` - Pour le refactoring de code
+- `test/` - Pour l'ajout de tests
+
+**Exemple :**
+```bash
+git checkout -b feature/authentification-utilisateur
+git checkout -b fix/correction-validation-email
+git checkout -b docs/guide-installation
+```
+
+---
+
+**Note :** Ce guide suppose une installation locale de développement. Pour la production, consultez la documentation officielle de Laravel pour les bonnes pratiques de déploiement.
