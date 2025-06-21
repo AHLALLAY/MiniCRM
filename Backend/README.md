@@ -16,11 +16,17 @@ Avant de commencer, assurez-vous d'avoir installé :
 
 ```bash
 composer install
+    # Cette commande installe toutes 
+    # les dépendances définies 
+    # dans le fichier `composer.json`.
 ```
 
-Cette commande installe toutes les dépendances définies dans le fichier `composer.json`.
-
 ### 2. Installation et configuration de JWT Auth
+
+#### Supprimer Sanctum
+```bash
+composer remove laravel/sanctum
+```
 
 #### Installation du package JWT Auth
 ```bash
@@ -36,19 +42,19 @@ php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServicePro
 
 ```bash
 cp .env.example .env
+# Créez votre fichier
+# de configuration local
+# à partir du template fourni.
 ```
 
-Créez votre fichier de configuration local à partir du template fourni.
 
 ### 4. Génération des clés de sécurité
 
-#### Clé d'application Laravel
 ```bash
+# Clé d'application Laravel
 php artisan key:generate
-```
 
-#### Clé JWT pour l'authentification
-```bash
+# Clé JWT pour l'authentification
 php artisan jwt:secret
 ```
 
@@ -91,6 +97,9 @@ CREATE DATABASE nom_de_votre_db;
 \q
 ```
 
+#### Option 3 : Manuellement
+dans l'interface de `PgAdmin4`
+
 ### 7. Exécution des migrations
 
 ```bash
@@ -128,105 +137,6 @@ php artisan serve
 
 Votre API sera accessible sur : **http://localhost:8000**
 
-## Vérification de l'installation
-
-### Test de l'API
-Vous pouvez tester votre API avec curl ou Postman :
-
-```bash
-# Test de base
-curl http://localhost:8000/api/health
-
-# Test d'authentification (si route disponible)
-curl -X POST http://localhost:8000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password"}'
-```
-
-### Vérification de la base de données
-```bash
-php artisan tinker
->>> DB::connection()->getPdo();
-```
-
-## Commandes utiles pour le développement
-
-### Génération de modèles et migrations
-```bash
-# Créer un modèle avec migration
-php artisan make:model NomModel -m
-
-# Créer un contrôleur
-php artisan make:controller NomController
-
-# Créer un middleware
-php artisan make:middleware NomMiddleware
-```
-
-### Gestion de la base de données
-```bash
-# Rollback des migrations
-php artisan migrate:rollback
-
-# Reset complet de la base
-php artisan migrate:fresh --seed
-
-# Vérifier le statut des migrations
-php artisan migrate:status
-```
-
-### Nettoyage du cache
-```bash
-# Nettoyer tous les caches
-php artisan optimize:clear
-
-# Ou individuellement
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
-```
-
-## Dépannage
-
-### Erreurs courantes
-
-**Erreur de connexion PostgreSQL :**
-- Vérifiez que PostgreSQL est démarré : `sudo service postgresql start`
-- Vérifiez les identifiants dans le fichier `.env`
-
-**Erreur JWT Secret :**
-- Assurez-vous d'avoir installé le package : `composer require tymon/jwt-auth`
-- Publiez la configuration : `php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"`
-- Exécutez `php artisan jwt:secret`
-- Vérifiez la présence de `JWT_SECRET` dans `.env`
-
-**Erreur de permissions :**
-```bash
-# Donner les bonnes permissions aux dossiers
-chmod -R 775 storage bootstrap/cache
-```
-
-**Problème de migration :**
-```bash
-# Reset et re-migration
-php artisan migrate:fresh
-```
-
-## Structure du projet
-
-```
-├── app/
-│   ├── Http/Controllers/     # Contrôleurs de l'API
-│   ├── Models/              # Modèles Eloquent
-│   └── Middleware/          # Middlewares personnalisés
-├── database/
-│   ├── migrations/          # Fichiers de migration
-│   └── seeders/            # Fichiers de seed
-├── routes/
-│   └── api.php             # Routes de l'API
-└── .env                    # Configuration environnement
-```
-
 ## Ressources utiles
 
 - [Documentation Laravel](https://laravel.com/docs)
@@ -239,17 +149,6 @@ php artisan migrate:fresh
 
 ⚠️ **OBLIGATOIRE :** Avant de commencer à travailler sur le projet, vous **devez** créer une branche spécifique pour vos modifications.
 
-```bash
-# Ne jamais travailler directement sur main/master
-git checkout -b feature/nom-de-votre-fonctionnalite
-
-# Ou pour un bugfix
-git checkout -b fix/description-du-bug
-
-# Ou pour de la documentation
-git checkout -b docs/mise-a-jour-readme
-```
-
 ### Workflow de contribution
 
 1. **Créer une branche** pour votre travail
@@ -257,22 +156,3 @@ git checkout -b docs/mise-a-jour-readme
 3. **Pousser votre branche** : `git push origin nom-de-votre-branche`
 4. **Créer une Pull Request** vers la branche principale
 5. **Attendre la review** avant le merge
-
-### Convention de nommage des branches
-
-- `feature/` - Pour les nouvelles fonctionnalités
-- `fix/` - Pour les corrections de bugs
-- `docs/` - Pour les modifications de documentation
-- `refactor/` - Pour le refactoring de code
-- `test/` - Pour l'ajout de tests
-
-**Exemple :**
-```bash
-git checkout -b feature/authentification-utilisateur
-git checkout -b fix/correction-validation-email
-git checkout -b docs/guide-installation
-```
-
----
-
-**Note :** Ce guide suppose une installation locale de développement. Pour la production, consultez la documentation officielle de Laravel pour les bonnes pratiques de déploiement.
